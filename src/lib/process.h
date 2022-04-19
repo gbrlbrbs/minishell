@@ -1,12 +1,13 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 typedef struct process {
     struct process* next;
     char** argv;
     pid_t pid;
-    char completed;
-    char stopped;
+    bool completed;
+    bool stopped;
     int status;
 } process;
 
