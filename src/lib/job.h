@@ -2,6 +2,7 @@
 #define JOB_H
 #include "process.h"
 #include <termios.h>
+#include <stdio.h>
 
 typedef struct job {
     struct job* next;

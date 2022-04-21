@@ -6,7 +6,7 @@ void init_shell(pid_t* shell_pgid, struct termios* shell_tmodes, int* shell_term
     if (*shell_is_interactive) {
         do {
             *shell_pgid = getpgrp();
-            kill(- (*shellpgid), SIGTTIN);
+            kill(- (*shell_pgid), SIGTTIN);
         } while (tcgetpgrp(*shell_terminal) != *shell_pgid);
 
         signal(SIGINT, SIG_IGN);
@@ -23,6 +23,6 @@ void init_shell(pid_t* shell_pgid, struct termios* shell_tmodes, int* shell_term
         }
 
         tcsetpgrp(*shell_terminal, *shell_pgid);
-        tcsetattr(*shell_terminal, shell_tmodes);
+        tcgetattr(*shell_terminal, shell_tmodes);
     }
 }
