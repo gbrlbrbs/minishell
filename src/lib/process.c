@@ -6,7 +6,7 @@ void print_process() {
 }
 
 void launch_process(
-    process* p,
+    process *p,
     pid_t pgid,
     int infile,
     int outfile,
