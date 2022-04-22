@@ -66,3 +66,15 @@ void launch_job(job* j, int foreground, int shell_is_interactive, int shell_term
 
     /* TODO: foreground/background and format info */
 }
+
+void put_job_in_foreground(job* j, int cont, int shell_terminal) {
+    /* put job in foreground */
+    tcsetpgrp(shell_terminal, j->pgid);
+
+    if (cont) {
+        tcsetattr(shell_terminal, TCSADRAIN, &j->tmodes);
+        if (kill(-(j->pgid), SIGCONT) < 0) perror("kill(SIGCONT)");
+    }
+
+    /* wait for job report */
+}
