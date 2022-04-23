@@ -15,6 +15,4 @@ typedef struct process {
     int status;
 } process;
 
-void print_process();
-
 void launch_process(process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground, int shell_is_interactive, int shell_terminal);

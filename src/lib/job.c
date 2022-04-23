@@ -112,5 +112,73 @@ int mark_process_status(pid_t pid, int status, job *const head) {
                 } 
             }
         }
+        /* it's here if it hasn't found any process */
+        fprintf(stderr, "No child process with PID = %d", pid);
+        return -1;
+    } else if (pid == 0 || errno == ECHILD) {
+        return -1;
+    } else {
+        perror("waitpid");
+        return -1;
     }
+}
+
+void update_status(job *const head) {
+    int status;
+    pid_t pid;
+    do {
+        pid = waitpid(WAIT_ANY, &status, WUNTRACED | WNOHANG);
+    } while (!mark_process_status(pid, status, head));
+}
+
+void wait_for_job(job *j, job *const head) {
+    int status;
+    pid_t pid;
+
+    do {
+        pid = waitpid(WAIT_ANY, &status, WUNTRACED);
+    } while (!mark_process_status(pid, status, head) && !job_stopped(j) && !job_completed(j));
+    
+}
+
+void format_job_info(job *const j, const char* status) {
+    fprintf(stderr, "%ld (%s): %s", (long) j->pgid, status, j->command);
+}
+
+void do_job_notification(job *head) {
+    job *j, *nextj, *lastj;
+
+    update_status(head);
+
+    lastj = NULL;
+    for (j = head; j; j = nextj) {
+        nextj = j->next;
+
+        if (job_completed(j)) {
+            format_job_info(j, "completed");
+            if (lastj) lastj->next = nextj;
+            else head = nextj;
+            free_job(j);
+        } else if (job_stopped(j) && !j->notified) {
+            format_job_info(j, "stopped");
+            j->notified = 1;
+            lastj = j;
+        } else {
+            lastj = j;
+        }
+    }
+}
+
+void free_job(job *j) {
+    process *p = j->first_process;
+    process *lastp;
+
+    while (p != NULL) {
+        lastp = p;
+        p = p->next;
+        if (lastp->argv) free(lastp->argv);
+        free(lastp);
+    }
+    free(j->command);
+    free(j);
 }

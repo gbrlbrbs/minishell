@@ -3,6 +3,9 @@
 #include "process.h"
 #include <termios.h>
 #include <stdio.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 typedef struct job {
     struct job *next;
