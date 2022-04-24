@@ -43,5 +43,5 @@ void launch_process(
 
     execvp(p->argv[0], p->argv);
     perror("execvp");
-    exit(1);
+    exit(EXIT_FAILURE);
 }

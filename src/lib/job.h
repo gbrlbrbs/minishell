@@ -21,5 +21,6 @@ job * find_job(pid_t pgid, job *const head);
 /* stdbool imported in process.h */
 bool job_stopped(job *const j);
 bool job_completed(job *const j);
+int mark_process_status(pid_t pid, int status, job *const head);
 
 #endif
