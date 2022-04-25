@@ -15,6 +15,7 @@ typedef struct job {
     char notified;
     struct termios tmodes;
     int stdin, stdout, stderr;
+    int foregound;
 } job;
 
 job * find_job(pid_t pgid, job *const head);
@@ -22,5 +23,8 @@ job * find_job(pid_t pgid, job *const head);
 bool job_stopped(job *const j);
 bool job_completed(job *const j);
 int mark_process_status(pid_t pid, int status, job *const head);
+void wait_for_job(job *j, job *const head);
+void format_job_info(job *const j, const char* status);
+void do_job_notification(job *head);
 
 #endif

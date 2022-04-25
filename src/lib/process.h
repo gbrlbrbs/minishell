@@ -8,10 +8,15 @@
 
 typedef struct process {
     struct process *next;
-    char ** argv;
+    char *command;
+    int argc;
+    char **argv;
+    char *input_path;
+    char *output_path;
     pid_t pid;
-    bool completed;
-    bool stopped;
+    int command_type;
+    int completed;
+    int stopped;
     int status;
 } process;
 
