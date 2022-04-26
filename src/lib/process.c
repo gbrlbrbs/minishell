@@ -5,7 +5,6 @@ void launch_process(
     pid_t pgid,
     int infile,
     int outfile,
-    int errfile,
     int foreground,
     int shell_is_interactive,
     int shell_terminal
@@ -36,12 +35,8 @@ void launch_process(
         dup2(outfile, STDOUT_FILENO);
         close(outfile);
     }
-    if (errfile != STDERR_FILENO) {
-        dup2(errfile, STDERR_FILENO);
-        close(errfile);
-    }
 
-    execvp(p->argv[0], p->argv);
-    perror("execvp");
+    execv(p->argv[0], p->argv);
+    perror("execv");
     exit(EXIT_FAILURE);
 }

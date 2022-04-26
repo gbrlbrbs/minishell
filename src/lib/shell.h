@@ -10,6 +10,8 @@
 #include <pwd.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <fcntl.h>
 #include <glob.h>
 #include "job.h"
 
@@ -17,12 +19,6 @@
 #define TOKEN_DELIMITERS " \t\n\r\a"
 #define PATH_BUFSIZE 1024
 #define COMMAND_BUFSIZE 1024
-
-#define STATUS_RUNNING 0
-#define STATUS_DONE 1
-#define STATUS_SUSPENDED 2
-#define STATUS_CONTINUED 3
-#define STATUS_TERMINATED 4
 
 #define COMMAND_EXTERNAL 0
 #define COMMAND_EXIT 1
@@ -47,5 +43,19 @@ typedef struct shell_info {
 
 void init_shell(shell_info *shell);
 void shell_print_welcome();
+void shell_loop(shell_info *shell);
+void update_cwd_info(shell_info *shell);
+void print_prompt(shell_info *const shell);
+int get_command_type(char *command);
+job *parse_command(char *line);
+process *parse_command_segment(char *seg);
+char *strtrim(char *line);
+char *readline();
+void check_zombie(shell_info *const shell);
+void launch_job(job *j, int foreground, shell_info *shell);
+void launch_builtin_command(process *const p, shell_info *shell);
+void put_job_in_foreground(job *j, int cont, shell_info *shell);
+void put_job_in_background(job *j, int cont);
+void continue_job(job *j, int foreground, shell_info *shell);
 
 #endif
