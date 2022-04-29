@@ -1,6 +1,5 @@
 add_executable(main main.c)
 include_directories(${minishell_SOURCE_DIR}/src/lib)
 add_subdirectory(lib)
-target_link_libraries(main process)
-target_link_libraries(main job)
+target_link_libraries(main parser)
 target_link_libraries(main shell)

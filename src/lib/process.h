@@ -11,7 +11,6 @@
 #include <unistd.h>
 
 typedef struct process {
-    struct process *next;
     char *command;
     int argc;
     char **argv;
@@ -19,12 +18,8 @@ typedef struct process {
     char *output_path;
     pid_t pid;
     int command_type;
-    int completed;
-    int stopped;
-    int status;
-    int shell_status;
 } process;
 
-void launch_process(process *p, pid_t pgid, int infile, int outfile, int foreground, int shell_is_interactive, int shell_terminal);
+void launch_process(process *p, int infile, int outfile);
 
 #endif
