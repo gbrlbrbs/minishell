@@ -19,6 +19,21 @@
 #define COMMAND_CD 2
 #define COMMAND_EXPORT 3
 #define COMMAND_UNSET 4
+#define COMMAND_JOBS 5
+#define COMMAND_FG 6
+#define COMMAND_BG 7
+#define COMMAND_KILL 8
+
+typedef struct job {
+    char *command;
+    int mode;
+    process *root_process;
+    pid_t pgid;
+    struct termios tmodes;
+    char notified;
+    int stdin, stdout, stderr;
+    struct job *next;
+} job;
 
 typedef struct parse_info {
     struct parse_info *next;
@@ -26,7 +41,7 @@ typedef struct parse_info {
 } parse_info;
 
 char *readline();
-parse_info *parse_line(char *line);
+job *parse_line(char *line);
 char *strtrim(char *line);
 process *parse_command_segment(char *segment);
 
