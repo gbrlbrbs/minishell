@@ -1,3 +1,3 @@
 # CES-33 - Minishell
 
-A minishell without tty and job control (for now...)
+A minishell WITH tty and job control.
