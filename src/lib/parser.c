@@ -46,18 +46,23 @@ char *strtrim(char *line) {
     return head;
 }
 
-parse_info *parse_line(char *line) {
+job* parse_line(char *line) {
     line = strtrim(line);
 
     char *command = strdup(line);
+
+    process *root_proc = NULL, *proc = NULL;
 
     char *line_cursor = line;
     char *c = line;
     char *seg;
 
-    int seg_len = 0;
+    int seg_len = 0, mode = FOREGROUND_EXECUTION;
 
-    parse_info *root = NULL, *p = NULL;
+    if (line[strlen(line) - 1] == '&') {
+        mode = BACKGROUND_EXECUTION;
+        line[strlen(line) -1] == '\0';
+    }
 
     while (true) {
         if (*c == '|' || *c == '\0') {
@@ -65,15 +70,13 @@ parse_info *parse_line(char *line) {
             strncpy(seg, line_cursor, seg_len);
             seg[seg_len] = '\0';
 
-            parse_info *newp = (parse_info *) malloc(sizeof(parse_info));
-            newp->segment = seg;
-            newp->next = NULL;
-            if (!root) {
-                root = newp;
-                p = root;
+            process *new_proc = (process *) parse_command_segment(seg);
+            if (!root_proc) {
+                root_proc = new_proc;
+                proc = root_proc;
             } else {
-                p->next = newp;
-                p = newp;
+                proc->next = new_proc;
+                proc = new_proc;
             }
 
             if (*c != '\0') {
@@ -91,7 +94,15 @@ parse_info *parse_line(char *line) {
         }
     }
 
-    return root;
+    job *new_job = (job *) malloc(sizeof(job));
+    new_job->root_process = root_proc;
+    new_job->command = command;
+    new_job->mode = mode;
+    new_job->pgid = -1;
+    new_job->stdin = STDIN_FILENO;
+    new_job->stdout = STDOUT_FILENO;
+    new_job->stderr = STDERR_FILENO;
+    return new_job;
 }
 
 int get_command_type(char *command) {
@@ -99,6 +110,10 @@ int get_command_type(char *command) {
     else if (strcmp(command, "cd") == 0) return COMMAND_CD;
     else if (strcmp(command, "export") == 0) return COMMAND_EXPORT;
     else if (strcmp(command, "unset") == 0) return COMMAND_UNSET;
+    else if (strcmp(command, "jobs") == 0) return COMMAND_JOBS;
+    else if (strcmp(command, "fg") == 0) return COMMAND_FG;
+    else if (strcmp(command, "bg") == 0) return COMMAND_BG;
+    else if (strcmp(command, "kill") == 0) return COMMAND_KILL;
     else return COMMAND_EXTERNAL;
 }
 
